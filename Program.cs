@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Spark.Sql;
 using static Microsoft.Spark.Sql.Functions;
+using Column = Microsoft.Spark.Sql.Column;
 
 namespace SparkClient
 {
@@ -26,10 +26,10 @@ namespace SparkClient
 
             var year = 2017;
 
-            // ShowTrafficEventTypesCountByCityAndTimeSpan(dataFrame, city, startTime, endTime, greaterThan);
-            //GetCountriesSortedByMostSevereWinter(dataFrame, year);
+            ShowTrafficEventTypesCountByCityAndTimeSpan(dataFrame, city, startTime, endTime, greaterThan);
+            GetCountriesSortedByMostSevereWinter(dataFrame, year);
 
-            // ShowTrafficData(dataFrame);
+            ShowTrafficData(dataFrame);
             ShowWeatherData(dataFrame);
         }
 
@@ -104,9 +104,9 @@ namespace SparkClient
                         return 1;
                     case "Moderate":
                         return 2;
-                    case "Severe":
-                        return 3;
                     case "Heavy":
+                        return 3;
+                    case "Severe":
                         return 4;
                     default:
                         return 0;
@@ -115,14 +115,13 @@ namespace SparkClient
 
             dataFrame.Filter(
                     Col("Source").EqualTo("W")
-                    .And(Col("Severity").IsIn("Light", "Moderate", "Severe", "Heavy"))
+                    .And(Col("Severity").IsIn("Light", "Moderate", "Heavy", "Severe"))
                     .And(Col("City") == city)
                     .And(Col("StartTime(UTC)").Between(startDate, endDate))
                     .And(Col("EndTime(UTC)").Between(startDate, endDate))
                 )
                 .GroupBy("Type")
                 .Agg(Min(convertSeverity(Col("Severity"))), Max(convertSeverity(Col("Severity"))), Avg(convertSeverity(Col("Severity"))), Stddev(convertSeverity(Col("Severity"))))
-                // .Agg(Min(Col("Severity")), Max(Col("Severity")), Avg(Col("Severity")), Stddev(Col("Severity")))
                 .Show();
         }
     }
