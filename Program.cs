@@ -26,8 +26,11 @@ namespace SparkClient
 
             var year = 2017;
 
-            ShowTrafficEventTypesCountByCityAndTimeSpan(dataFrame, city, startTime, endTime, greaterThan);
+            // ShowTrafficEventTypesCountByCityAndTimeSpan(dataFrame, city, startTime, endTime, greaterThan);
             //GetCountriesSortedByMostSevereWinter(dataFrame, year);
+
+            // ShowTrafficData(dataFrame);
+            ShowWeatherData(dataFrame);
         }
 
         static void GetCountriesSortedByMostSevereWinter(DataFrame dataFrame, int year)
@@ -69,6 +72,57 @@ namespace SparkClient
                 .GroupBy("Type")
                 .Agg(Count(dataFrame["Type"]))
                 .Filter(Count(dataFrame["Type"]).Gt(greaterThan))
+                .Show();
+        }
+
+        static void ShowTrafficData(DataFrame dataFrame)
+        {
+            string city = "San Francisco";
+            string startDate = "2010-01-01 00:00:00";
+            string endDate = "2020-01-01 00:00:00";
+
+            dataFrame.Filter(
+                    Col("Source").EqualTo("T")
+                    .And(Col("City") == city)
+                    .And(Col("StartTime(UTC)").Between(startDate, endDate))
+                    .And(Col("EndTime(UTC)").Between(startDate, endDate))
+                )
+                .GroupBy("Type")
+                .Agg(Min("Distance(mi)"), Max("Distance(mi)"), Avg("Distance(mi)"), Stddev("Distance(mi)"))
+                .Show();
+        }
+
+        static void ShowWeatherData(DataFrame dataFrame)
+        {
+            string city = "San Francisco";
+            string startDate = "2010-01-01 00:00:00";
+            string endDate = "2020-01-01 00:00:00";
+            
+            Func<Column, Column> convertSeverity = Udf<string, int>(severityString => {
+                switch (severityString) {
+                    case "Light":
+                        return 1;
+                    case "Moderate":
+                        return 2;
+                    case "Severe":
+                        return 3;
+                    case "Heavy":
+                        return 4;
+                    default:
+                        return 0;
+                }
+            });
+
+            dataFrame.Filter(
+                    Col("Source").EqualTo("W")
+                    .And(Col("Severity").IsIn("Light", "Moderate", "Severe", "Heavy"))
+                    .And(Col("City") == city)
+                    .And(Col("StartTime(UTC)").Between(startDate, endDate))
+                    .And(Col("EndTime(UTC)").Between(startDate, endDate))
+                )
+                .GroupBy("Type")
+                .Agg(Min(convertSeverity(Col("Severity"))), Max(convertSeverity(Col("Severity"))), Avg(convertSeverity(Col("Severity"))), Stddev(convertSeverity(Col("Severity"))))
+                // .Agg(Min(Col("Severity")), Max(Col("Severity")), Avg(Col("Severity")), Stddev(Col("Severity")))
                 .Show();
         }
     }
