@@ -24,25 +24,18 @@ namespace SparkClient
             var endTime = "2018-00-00 00:00:00";
             var greaterThan = 500;
 
-            var year = 2017;
-
             ShowTrafficEventTypesCountByCityAndTimeSpan(dataFrame, city, startTime, endTime, greaterThan);
 
             ShowTrafficData(dataFrame);
         }
 
-        static void ShowTrafficEventTypesCountByCityAndTimeSpan(
-            DataFrame dataFrame, string city, string startTime, string endTime, int greaterThan)
+        static void ShowTrafficEventTypesCountByCityAndTimeSpan(DataFrame dataFrame, string city, string startTime, string endTime, int greaterThan)
         {
-            dataFrame
-                .Filter(
-                    dataFrame["Source"].EqualTo("T")
-                        .And(
-                    dataFrame["City"].EqualTo(city)
-                        .And(
-                    dataFrame["StartTime(UTC)"].Gt(Lit(startTime))
-                        .And(
-                    dataFrame["EndTime(UTC)"].Lt(Lit(endTime)))
+            dataFrame.Filter(
+                    Col("Source").EqualTo("T")
+                    .And(Col("City").EqualTo(city))
+                    .And(Col("StartTime(UTC)").Gt(Lit(startTime))
+                    .And(Col("EndTime(UTC)").Lt(Lit(endTime))
                 )))
                 .GroupBy("Type")
                 .Agg(Count(dataFrame["Type"]))
