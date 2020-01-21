@@ -1,5 +1,6 @@
 # Custom
 data-to-process/*.csv
+data-to-process/download
 
 
 ## Ignore Visual Studio temporary files, build results, and
