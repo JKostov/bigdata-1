@@ -30,7 +30,7 @@ mv TrafficWeatherEvent_Aug16_June19_Publish.csv traffic-data.csv
 ## Pre-reqs
 
 To build and run this app locally you will need a few things:
-- Intall [.NET Core](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-dotnet)
+- Install [.NET Core](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-dotnet)
 - Install [Java](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-pre-reqs)
 - Install [Spark(2.4.1) with hadoop(2.7)](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-spark)
 - Install [Microsoft Spark worker(0.7.0)](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-worker)
