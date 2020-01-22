@@ -24,7 +24,6 @@ namespace SparkClient
 
             ShowTrafficEventTypesCountByCityAndTimeSpan(dataFrame);
 
-            
             ShowDistanceOfRoadAffectedPerTypeData(dataFrame);
             
             ShowCityWithTheMaxAndMinNumberOfAccidentsInPeriod(dataFrame);
