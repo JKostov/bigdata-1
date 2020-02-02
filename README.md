@@ -29,11 +29,91 @@ tar xf download
 mv TrafficWeatherEvent_Aug16_June19_Publish.csv traffic-data.csv
 ```
 
+## Setting up hadoop
+- Download hadoop in `~/bin` from this [link](https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-3.1.3/hadoop-3.1.3-src.tar.gz) and extract it
+```
+cd ~/bin
+wget https://www-eu.apache.org/dist/hadoop/common/hadoop-3.1.3/hadoop-3.1.3.tar.gz
+tar xf hadoop-3.1.3.tar.gz
+```
+
+- Install pre-reqs for hadoop as said on this link [link](https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html)
+```
+sudo apt-get install ssh
+sudo apt-get install pdsh
+```
+- Do the configuration for pseudo-distributed operation from this [link](https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html#Pseudo-Distributed_Operation)
+
+~/bin/hadoop-3.1.3/etc/hadoop/core-site.xml:
+```
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://localhost:9000</value>
+    </property>
+</configuration>
+```
+
+~/bin/hadoop-3.1.3/etc/hadoop/hdfs-site.xml:
+```
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+</configuration>
+```
+
+- Setup passwordless shh from this [link](https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html#Pseudo-Distributed_Operation)
+
+Check that you can ssh to the localhost without a passphrase:
+```
+ssh localhost
+```
+
+If you cannot ssh to localhost without a passphrase, execute the following commands:
+```
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 0600 ~/.ssh/authorized_keys
+```
+- Setup env variables in `~/bin/hadoop-3.1.3/etc/hadoop/hadoop-env.sh` at the end of the file:
+```
+export JAVA_HOME=<your_java_home; hint:/usr/lib/jvm/java-8-openjdk-amd64/>
+export PDSH_RCMD_TYPE=ssh
+export HDFS_NAMENODE_USER=<current_root_user>
+export HDFS_DATANODE_USER=<current_root_user>
+export HDFS_SECONDARYNAMENODE_USER=<current_root_user>
+export YARN_RESOURCEMANAGER_USER=<current_root_user>
+export YARN_NODEMANAGER_USER=<current_root_user>
+```
+- Pre-start commands
+```
+sudo ~/bin/hadoop-3.1.3/bin/hdfs namenode -format
+sudo ~/bin/hadoop-3.1.3/sbin/start-dfs.sh
+sudo ~/bin/hadoop-3.1.3/bin/hdfs dfs -mkdir /user
+sudo ~/bin/hadoop-3.1.3/bin/hdfs dfs -mkdir /user/root
+sudo ~/bin/hadoop-3.1.3/bin/hdfs dfs -mkdir /user/root/big-data
+```
+
+- Put file on hadoop
+```
+sudo ~/bin/hadoop-3.1.3/bin/hdfs dfs -put <csv_file_path>/traffic-data.csv /user/root/big-data/
+```
+
+- List hdfs
+```
+sudo ~/bin/hadoop-3.1.3/bin/hadoop fs -ls hdfs://localhost:9000
+```
+
+
 ## Pre-reqs
 
+Hadoop, Spark and spark worker will be installed in `~/bin/`
 To build and run this app locally you will need a few things:
 - Install [.NET Core](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-dotnet)
 - Install [Java](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-pre-reqs)
+- Install [Hadoop(3.1.3)](https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html)
 - Install [Spark(2.4.1) with hadoop(2.7)](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-spark)
 - Install [Microsoft Spark worker(0.7.0)](https://dotnet.microsoft.com/learn/data/spark-tutorial/install-worker)
 

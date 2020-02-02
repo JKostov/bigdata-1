@@ -12,7 +12,7 @@ namespace SparkClient
         static Dictionary<string, int> dictionary = InitDictionary();
         static void Main(string[] args)
         {
-            var dataPath = "data-to-process/traffic-data.csv";
+            var dataPath = "hdfs://localhost:9000/user/root/big-data/traffic-data.csv";
             var Spark = SparkSession
                            .Builder()
                            .GetOrCreate();
