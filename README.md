@@ -88,6 +88,7 @@ export YARN_RESOURCEMANAGER_USER=<current_root_user>
 export YARN_NODEMANAGER_USER=<current_root_user>
 ```
 - Pre-start commands
+If you get permission denied try with sudo - u <current_root_user> <cmd_to_exec>
 ```
 sudo ~/bin/hadoop-3.1.3/bin/hdfs namenode -format
 sudo ~/bin/hadoop-3.1.3/sbin/start-dfs.sh
