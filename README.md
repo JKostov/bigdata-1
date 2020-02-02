@@ -107,6 +107,11 @@ sudo ~/bin/hadoop-3.1.3/bin/hdfs dfs -put <csv_file_path>/traffic-data.csv /user
 sudo ~/bin/hadoop-3.1.3/bin/hadoop fs -ls hdfs://localhost:9000
 ```
 
+- Web interface
+```
+localhost:9870
+```
+
 
 ## Pre-reqs
 
